@@ -1,0 +1,28 @@
+import requests
+
+
+def search(geocode_request, spn=False):
+
+	geocoder_params = {
+
+		'apikey': '40d1649f-0493-4b70-98ba-98533de7710b',
+		'geocode': geocode_request,
+		'format': 'json'
+
+	}
+
+	geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
+	response = requests.get(geocoder_api_server, params=geocoder_params)
+	json_response = response.json()
+	toponym = json_response['response']['GeoObjectCollection'][
+							'featureMember'][0]['GeoObject']
+	toponym_coordinates = toponym['Point']['pos']
+	toponym_lower_corner = toponym['boundedBy']['Envelope']['lowerCorner'].split()
+	toponym_upper_corner = toponym['boundedBy']['Envelope']['upperCorner'].split()
+	first_corner = (float(toponym_upper_corner[0]) - float(toponym_lower_corner[0])) / 2
+	second_corner = (float(toponym_upper_corner[1]) - float(toponym_lower_corner[1])) / 2
+	toponym_spn = first_corner, second_corner
+	toponym_ll = toponym_longitube, toponym_lattitube = toponym_coordinates.split(' ')
+	print('toponym_ll='+toponym_ll, 'toponym_spn='+toponym_spn)
+
+	return toponym_ll, toponym_spn
